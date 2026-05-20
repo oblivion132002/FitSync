@@ -11,11 +11,12 @@ function Register() {
   const [password, setPassword] = useState("")
 
   const handleRegister = async (e) => {
+
     e.preventDefault()
 
     try {
 
-      const res = await axios.post(
+      await axios.post(
         "https://fitsync-xnav.onrender.com/api/auth/register",
         {
           username,
@@ -24,16 +25,20 @@ function Register() {
         }
       )
 
-      alert(res.data.message)
+      alert("Registration Successful")
 
       navigate("/login")
 
     } catch (err) {
+
       alert(err.response.data.message)
+
     }
+
   }
 
   return (
+
     <div className="bg-gray-950 min-h-screen flex items-center justify-center">
 
       <form
@@ -49,6 +54,7 @@ function Register() {
           type="text"
           placeholder="Username"
           className="w-full p-4 mb-4 rounded-xl bg-gray-800 text-white"
+          value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
@@ -56,6 +62,7 @@ function Register() {
           type="email"
           placeholder="Email"
           className="w-full p-4 mb-4 rounded-xl bg-gray-800 text-white"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
@@ -63,6 +70,7 @@ function Register() {
           type="password"
           placeholder="Password"
           className="w-full p-4 mb-6 rounded-xl bg-gray-800 text-white"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
@@ -76,7 +84,9 @@ function Register() {
       </form>
 
     </div>
+
   )
+
 }
 
 export default Register

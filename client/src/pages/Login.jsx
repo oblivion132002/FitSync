@@ -30,11 +30,15 @@ function Login() {
       navigate("/dashboard")
 
     } catch (err) {
+
       alert(err.response.data.message)
+
     }
+
   }
 
   return (
+
     <div className="bg-gray-950 min-h-screen flex items-center justify-center">
 
       <form
@@ -50,13 +54,15 @@ function Login() {
           type="email"
           placeholder="Email"
           className="w-full p-4 mb-4 rounded-xl bg-gray-800 text-white"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-4 mb-6 rounded-xl bg-gray-800 text-white"
+          className="w-full p-6 rounded-xl bg-gray-800 text-white mb-6"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
@@ -70,7 +76,9 @@ function Login() {
       </form>
 
     </div>
+
   )
+
 }
 
 export default Login
