@@ -1,72 +1,64 @@
 const express = require("express")
-
 const router = express.Router()
 
 const Workout = require("../models/Workout")
 
-// CREATE WORKOUT
+// GET all workouts
+router.get("/", async (req, res) => {
+
+  try {
+
+    const workouts = await Workout.find()
+
+    res.json(workouts)
+
+  } catch (err) {
+
+    res.status(500).json({
+      message: err.message,
+    })
+  }
+})
+
+// ADD workout
 router.post("/", async (req, res) => {
 
   try {
 
-    const workout = new Workout(req.body)
+    const newWorkout = new Workout({
+      exercise: req.body.exercise,
+      calories: req.body.calories,
+    })
 
-    await workout.save()
+    const savedWorkout = await newWorkout.save()
 
-    res.status(201).json(workout)
+    res.status(201).json(savedWorkout)
 
-  } catch (error) {
+  } catch (err) {
 
     res.status(500).json({
-      message: error.message
+      message: err.message,
     })
-
   }
-
 })
 
-// GET USER WORKOUTS
-router.get("/:userId", async (req, res) => {
-
-  try {
-
-    const workouts = await Workout.find({
-      userId: req.params.userId
-    })
-
-    res.status(200).json(workouts)
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    })
-
-  }
-
-})
-
-// DELETE WORKOUT
+// DELETE workout
 router.delete("/:id", async (req, res) => {
 
   try {
 
-    await Workout.findByIdAndDelete(
-      req.params.id
-    )
+    await Workout.findByIdAndDelete(req.params.id)
 
-    res.status(200).json({
-      message: "Workout deleted"
+    res.json({
+      message: "Workout deleted",
     })
 
-  } catch (error) {
+  } catch (err) {
 
     res.status(500).json({
-      message: error.message
+      message: err.message,
     })
-
   }
-
 })
 
 module.exports = router
