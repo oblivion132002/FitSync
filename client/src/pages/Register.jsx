@@ -1,39 +1,36 @@
 import { useState } from "react"
 import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 function Register() {
+
+  const navigate = useNavigate()
 
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
   const handleRegister = async (e) => {
-
     e.preventDefault()
-
-    console.log("Register button clicked")
 
     try {
 
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+      const res = await axios.post(
+        "https://fitsync-xnav.onrender.com/api/auth/register",
         {
           username,
           email,
-          password
+          password,
         }
       )
 
-      alert(response.data.message)
+      alert(res.data.message)
 
-    } catch (error) {
+      navigate("/login")
 
-      console.log(error)
-
-      alert("Registration failed")
-
+    } catch (err) {
+      alert(err.response.data.message)
     }
-
   }
 
   return (
@@ -52,7 +49,6 @@ function Register() {
           type="text"
           placeholder="Username"
           className="w-full p-4 mb-4 rounded-xl bg-gray-800 text-white"
-          value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
 
@@ -60,7 +56,6 @@ function Register() {
           type="email"
           placeholder="Email"
           className="w-full p-4 mb-4 rounded-xl bg-gray-800 text-white"
-          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
@@ -68,7 +63,6 @@ function Register() {
           type="password"
           placeholder="Password"
           className="w-full p-4 mb-6 rounded-xl bg-gray-800 text-white"
-          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 

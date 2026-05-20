@@ -1,6 +1,6 @@
 import { useState } from "react"
 import axios from "axios"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 function Login() {
 
@@ -15,34 +15,23 @@ function Login() {
 
     try {
 
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+      const res = await axios.post(
+        "https://fitsync-xnav.onrender.com/api/auth/login",
         {
           email,
-          password
+          password,
         }
       )
 
-      localStorage.setItem(
-        "token",
-        response.data.token
-      )
+      localStorage.setItem("token", res.data.token)
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(response.data.user)
-      )
-
-      alert("Login successful")
+      alert("Login Successful")
 
       navigate("/dashboard")
 
-    } catch (error) {
-
-      alert("Login failed")
-
+    } catch (err) {
+      alert(err.response.data.message)
     }
-
   }
 
   return (
@@ -61,7 +50,6 @@ function Login() {
           type="email"
           placeholder="Email"
           className="w-full p-4 mb-4 rounded-xl bg-gray-800 text-white"
-          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
@@ -69,7 +57,6 @@ function Login() {
           type="password"
           placeholder="Password"
           className="w-full p-4 mb-6 rounded-xl bg-gray-800 text-white"
-          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
@@ -79,18 +66,6 @@ function Login() {
         >
           Login
         </button>
-
-        <p className="text-gray-400 text-center mt-6">
-          Don't have an account?{" "}
-
-          <Link
-            to="/register"
-            className="text-blue-400 hover:text-blue-500"
-          >
-            Register
-          </Link>
-
-        </p>
 
       </form>
 

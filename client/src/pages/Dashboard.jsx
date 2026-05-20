@@ -1,49 +1,37 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from "recharts"
 
 function Dashboard() {
 
-  const user = JSON.parse(
-    localStorage.getItem("user")
-  )
-
   const [workouts, setWorkouts] = useState([])
-
-  const [workoutName, setWorkoutName] = useState("")
-  const [duration, setDuration] = useState("")
+  const [exercise, setExercise] = useState("")
   const [calories, setCalories] = useState("")
 
   const fetchWorkouts = async () => {
 
     try {
 
-      const response = await axios.get(
-        `http://localhost:5000/api/workouts/${user.id}`
+      const res = await axios.get(
+        "https://fitsync-xnav.onrender.com/api/workouts"
       )
 
-      setWorkouts(response.data)
+      setWorkouts(res.data)
 
-    } catch (error) {
-
-      console.log(error)
-
+    } catch (err) {
+      console.log(err)
     }
-
   }
 
   useEffect(() => {
-
     fetchWorkouts()
-
   }, [])
 
   const addWorkout = async (e) => {
@@ -53,27 +41,21 @@ function Dashboard() {
     try {
 
       await axios.post(
-        "http://localhost:5000/api/workouts",
+        "https://fitsync-xnav.onrender.com/api/workouts",
         {
-          userId: user.id,
-          workoutName,
-          duration,
-          calories
+          exercise,
+          calories,
         }
       )
 
-      setWorkoutName("")
-      setDuration("")
+      setExercise("")
       setCalories("")
 
       fetchWorkouts()
 
-    } catch (error) {
-
-      console.log(error)
-
+    } catch (err) {
+      console.log(err)
     }
-
   }
 
   const deleteWorkout = async (id) => {
@@ -81,54 +63,34 @@ function Dashboard() {
     try {
 
       await axios.delete(
-        `http://localhost:5000/api/workouts/${id}`
+        `https://fitsync-xnav.onrender.com/api/workouts/${id}`
       )
 
       fetchWorkouts()
 
-    } catch (error) {
-
-      console.log(error)
-
+    } catch (err) {
+      console.log(err)
     }
-
   }
 
-  const totalCalories = workouts.reduce(
-    (acc, workout) => acc + Number(workout.calories),
-    0
-  )
+  const logout = () => {
 
-  const totalDuration = workouts.reduce(
-    (acc, workout) => acc + Number(workout.duration),
-    0
-  )
+    localStorage.removeItem("token")
 
-  const chartData = workouts.map((workout) => ({
-    name: workout.workoutName,
-    calories: Number(workout.calories)
-  }))
+    window.location.href = "/login"
+  }
 
   return (
-    <div className="bg-gray-950 min-h-screen text-white p-10">
+    <div className="bg-gray-950 min-h-screen text-white p-8">
 
       <div className="flex justify-between items-center mb-10">
 
-        <div>
-          <h1 className="text-5xl font-bold">
-            Dashboard
-          </h1>
-
-          <p className="text-gray-400 mt-2">
-            Welcome back, {user?.username}
-          </p>
-        </div>
+        <h1 className="text-4xl font-bold">
+          Fitness Dashboard
+        </h1>
 
         <button
-          onClick={() => {
-            localStorage.clear()
-            window.location.href = "/login"
-          }}
+          onClick={logout}
           className="bg-red-500 hover:bg-red-600 px-6 py-3 rounded-xl"
         >
           Logout
@@ -136,67 +98,9 @@ function Dashboard() {
 
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-
-        <div className="bg-gray-900 p-8 rounded-2xl">
-          <h2 className="text-xl mb-2">
-            Total Calories
-          </h2>
-
-          <p className="text-4xl font-bold text-blue-400">
-            {totalCalories}
-          </p>
-        </div>
-
-        <div className="bg-gray-900 p-8 rounded-2xl">
-          <h2 className="text-xl mb-2">
-            Total Workout Time
-          </h2>
-
-          <p className="text-4xl font-bold text-green-400">
-            {totalDuration} mins
-          </p>
-        </div>
-
-        <div className="bg-gray-900 p-8 rounded-2xl">
-          <h2 className="text-xl mb-2">
-            Workouts Logged
-          </h2>
-
-          <p className="text-4xl font-bold text-purple-400">
-            {workouts.length}
-          </p>
-        </div>
-
-      </div>
-
-      <div className="bg-gray-900 p-8 rounded-2xl mb-10">
-
-        <h2 className="text-2xl font-bold mb-6">
-          Calories Burned Analytics
-        </h2>
-
-        <ResponsiveContainer width="100%" height={300}>
-
-          <BarChart data={chartData}>
-
-            <XAxis dataKey="name" />
-
-            <YAxis />
-
-            <Tooltip />
-
-            <Bar dataKey="calories" fill="#3B82F6" />
-
-          </BarChart>
-
-        </ResponsiveContainer>
-
-      </div>
-
       <form
         onSubmit={addWorkout}
-        className="bg-gray-900 p-8 rounded-2xl mb-10"
+        className="bg-gray-900 p-6 rounded-2xl mb-10"
       >
 
         <h2 className="text-2xl font-bold mb-6">
@@ -205,17 +109,9 @@ function Dashboard() {
 
         <input
           type="text"
-          placeholder="Workout Name"
-          value={workoutName}
-          onChange={(e) => setWorkoutName(e.target.value)}
-          className="w-full p-4 mb-4 rounded-xl bg-gray-800"
-        />
-
-        <input
-          type="number"
-          placeholder="Duration (minutes)"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
+          placeholder="Exercise"
+          value={exercise}
+          onChange={(e) => setExercise(e.target.value)}
           className="w-full p-4 mb-4 rounded-xl bg-gray-800"
         />
 
@@ -236,39 +132,71 @@ function Dashboard() {
 
       </form>
 
-      <div className="grid gap-6">
+      <div className="bg-gray-900 p-6 rounded-2xl mb-10">
 
-        {workouts.map((workout) => (
+        <h2 className="text-2xl font-bold mb-6">
+          Workout Analytics
+        </h2>
 
-          <div
-            key={workout._id}
-            className="bg-gray-900 p-6 rounded-2xl flex justify-between items-center"
-          >
+        <div className="h-72">
 
-            <div>
-              <h2 className="text-2xl font-bold">
-                {workout.workoutName}
-              </h2>
+          <ResponsiveContainer width="100%" height="100%">
 
-              <p className="text-gray-400">
-                Duration: {workout.duration} mins
-              </p>
+            <BarChart data={workouts}>
 
-              <p className="text-gray-400">
-                Calories: {workout.calories}
-              </p>
+              <XAxis dataKey="exercise" />
+
+              <YAxis />
+
+              <Tooltip />
+
+              <Bar dataKey="calories" />
+
+            </BarChart>
+
+          </ResponsiveContainer>
+
+        </div>
+
+      </div>
+
+      <div className="bg-gray-900 p-6 rounded-2xl">
+
+        <h2 className="text-2xl font-bold mb-6">
+          Workout History
+        </h2>
+
+        <div className="space-y-4">
+
+          {workouts.map((workout) => (
+
+            <div
+              key={workout._id}
+              className="bg-gray-800 p-4 rounded-xl flex justify-between items-center"
+            >
+
+              <div>
+                <h3 className="text-xl font-bold">
+                  {workout.exercise}
+                </h3>
+
+                <p className="text-gray-400">
+                  {workout.calories} Calories
+                </p>
+              </div>
+
+              <button
+                onClick={() => deleteWorkout(workout._id)}
+                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg"
+              >
+                Delete
+              </button>
+
             </div>
 
-            <button
-              onClick={() => deleteWorkout(workout._id)}
-              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl"
-            >
-              Delete
-            </button>
+          ))}
 
-          </div>
-
-        ))}
+        </div>
 
       </div>
 
