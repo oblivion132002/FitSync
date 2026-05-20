@@ -15,13 +15,19 @@ function Dashboard() {
   const [exercise, setExercise] = useState("")
   const [calories, setCalories] = useState("")
 
+  const API = "https://fitsync-xnav.onrender.com/api/workouts"
+
   const fetchWorkouts = async () => {
 
     try {
 
-      const res = await axios.get(
-        "https://fitsync-xnav.onrender.com/api/workouts"
-      )
+      const token = localStorage.getItem("token")
+
+      const res = await axios.get(API, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
       setWorkouts(res.data)
 
@@ -40,11 +46,18 @@ function Dashboard() {
 
     try {
 
+      const token = localStorage.getItem("token")
+
       await axios.post(
-        "https://fitsync-xnav.onrender.com/api/workouts",
+        API,
         {
           exercise,
           calories,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       )
 
@@ -53,8 +66,11 @@ function Dashboard() {
 
       fetchWorkouts()
 
+      alert("Workout Added Successfully")
+
     } catch (err) {
       console.log(err)
+      alert("Failed to add workout")
     }
   }
 
@@ -62,8 +78,15 @@ function Dashboard() {
 
     try {
 
+      const token = localStorage.getItem("token")
+
       await axios.delete(
-        `https://fitsync-xnav.onrender.com/api/workouts/${id}`
+        `${API}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       )
 
       fetchWorkouts()
@@ -77,7 +100,7 @@ function Dashboard() {
 
     localStorage.removeItem("token")
 
-    window.location.href = "/login"
+    window.location.href = "/"
   }
 
   return (
@@ -113,6 +136,7 @@ function Dashboard() {
           value={exercise}
           onChange={(e) => setExercise(e.target.value)}
           className="w-full p-4 mb-4 rounded-xl bg-gray-800"
+          required
         />
 
         <input
@@ -121,6 +145,7 @@ function Dashboard() {
           value={calories}
           onChange={(e) => setCalories(e.target.value)}
           className="w-full p-4 mb-6 rounded-xl bg-gray-800"
+          required
         />
 
         <button
@@ -176,6 +201,7 @@ function Dashboard() {
             >
 
               <div>
+
                 <h3 className="text-xl font-bold">
                   {workout.exercise}
                 </h3>
@@ -183,6 +209,7 @@ function Dashboard() {
                 <p className="text-gray-400">
                   {workout.calories} Calories
                 </p>
+
               </div>
 
               <button
