@@ -28,6 +28,7 @@ router.post("/", async (req, res) => {
     const newWorkout = new Workout({
       exercise: req.body.exercise,
       calories: req.body.calories,
+      duration: req.body.duration,
     })
 
     const savedWorkout = await newWorkout.save()

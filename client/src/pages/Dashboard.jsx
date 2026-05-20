@@ -14,6 +14,7 @@ function Dashboard() {
   const [workouts, setWorkouts] = useState([])
   const [exercise, setExercise] = useState("")
   const [calories, setCalories] = useState("")
+  const [duration, setDuration] = useState("")
 
   const API = "https://fitsync-xnav.onrender.com/api/workouts"
 
@@ -51,8 +52,9 @@ function Dashboard() {
       await axios.post(
         API,
         {
-          exercise,
-          calories,
+            exercise,
+            calories,
+            duration,
         },
         {
           headers: {
@@ -63,6 +65,7 @@ function Dashboard() {
 
       setExercise("")
       setCalories("")
+      setDuration("")
 
       fetchWorkouts()
 
@@ -148,6 +151,15 @@ function Dashboard() {
           required
         />
 
+        <input
+          type="number"
+          placeholder="Workout Duration (minutes)"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          className="w-full p-4 mb-6 rounded-xl bg-gray-800"
+          required
+        />
+
         <button
           type="submit"
           className="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-xl"
@@ -207,7 +219,7 @@ function Dashboard() {
                 </h3>
 
                 <p className="text-gray-400">
-                  {workout.calories} Calories
+                  {workout.calories} Calories • {workout.duration} Minutes
                 </p>
 
               </div>
